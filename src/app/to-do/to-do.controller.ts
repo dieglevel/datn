@@ -7,20 +7,24 @@ import {
   Param,
   Delete,
   ForbiddenException,
+  HttpCode,
 } from "@nestjs/common";
 import { ToDoService } from "./to-do.service";
 import { CreateToDoDto } from "./dto/create-to-do.dto";
 import { UpdateToDoDto } from "./dto/update-to-do.dto";
 import { ApiErrorResponses } from "src/common/decorator/api-error-response.decorator";
 import { ApiBaseResponse } from "src/common/decorator/api-base-response.decorator";
+import { ApiBearerAuth } from "@nestjs/swagger";
 
 @Controller("to-do")
 export class ToDoController {
   constructor(private readonly toDoService: ToDoService) {}
 
   @Post()
-  @ApiBaseResponse(CreateToDoDto)
+  @HttpCode(200)
+  @ApiBaseResponse([CreateToDoDto])
   @ApiErrorResponses()
+  @ApiBearerAuth("access-token")
   create(@Body() createToDoDto: CreateToDoDto) {
     throw new ForbiddenException({
       message: "You are not allowed to create a new ToDo item.",
