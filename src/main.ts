@@ -12,7 +12,9 @@ import { ValidatePipeConfig } from "./common/pipe/validation.pipe";
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+
   const configService = app.get(ConfigService);
+
   const port = configService.get<number>("PORT") || 9999;
   const hostname = configService.get<string>("HOST") || "0.0.0.0";
   const env = configService.get<string>("NODE_ENV") || "development";
@@ -21,6 +23,7 @@ async function bootstrap() {
 
   app.use(helmet());
   app.enableCors();
+
   app.setGlobalPrefix(configService.get<string>("API_PREFIX") || "api");
   app.useGlobalInterceptors(new ResponseInterceptor());
   app.useGlobalFilters(new AllExceptionsFilter());

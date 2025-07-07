@@ -1,53 +1,21 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Patch,
-  Param,
-  Delete,
-  ForbiddenException,
-  HttpCode,
-} from "@nestjs/common";
-import { ToDoService } from "./to-do.service";
-import { CreateToDoDto } from "./dto/create-to-do.dto";
-import { UpdateToDoDto } from "./dto/update-to-do.dto";
-import { ApiErrorResponses } from "src/common/decorator/api-error-response.decorator";
-import { ApiBaseResponse } from "src/common/decorator/api-base-response.decorator";
+import { Body, Controller, HttpCode, Post } from "@nestjs/common";
 import { ApiBearerAuth } from "@nestjs/swagger";
+import { ApiBaseResponse } from "src/common/decorator/api-base-response.decorator";
+import { ApiErrorResponses } from "src/common/decorator/api-error-response.decorator";
+import { CreateToDo_RequestDto } from "./dto/request.dto";
+import { CreateToDo_ResponseDto } from "./dto/response.dto";
+import { ToDoService } from "./to-do.service";
 
 @Controller("to-do")
+@ApiBearerAuth("access-token")
 export class ToDoController {
   constructor(private readonly toDoService: ToDoService) {}
 
   @Post()
   @HttpCode(200)
-  @ApiBaseResponse([CreateToDoDto])
+  @ApiBaseResponse(CreateToDo_ResponseDto)
   @ApiErrorResponses()
-  @ApiBearerAuth("access-token")
-  create(@Body() createToDoDto: CreateToDoDto) {
-    throw new ForbiddenException({
-      message: "You are not allowed to create a new ToDo item.",
-    });
-  }
-
-  @Get()
-  findAll() {
-    return this.toDoService.findAll();
-  }
-
-  @Get(":id")
-  findOne(@Param("id") id: string) {
-    return this.toDoService.findOne(+id);
-  }
-
-  @Patch(":id")
-  update(@Param("id") id: string, @Body() updateToDoDto: UpdateToDoDto) {
-    return this.toDoService.update(+id, updateToDoDto);
-  }
-
-  @Delete(":id")
-  remove(@Param("id") id: string) {
-    return this.toDoService.remove(+id);
+  async test(@Body() data: CreateToDo_RequestDto) {
+    return await this.toDoService.create(data);
   }
 }
